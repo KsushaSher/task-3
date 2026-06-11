@@ -1,18 +1,21 @@
 export default function handler(req, res) {
-  const x = Number(req.query.x);
-  const y = Number(req.query.y);
+  const xStr = req.query.x;
+  const yStr = req.query.y;
 
-  const isNatural = (n) => {
-    return Number.isInteger(n) && n > 0;
+  const isNatural = (str) => {
+    return /^[1-9]\d*$/.test(str);
   };
 
-  if (!isNatural(x) || !isNatural(y)) {
+  if (!isNatural(xStr) || !isNatural(yStr)) {
     res.setHeader("Content-Type", "text/plain");
     return res.status(200).send("NaN");
   }
 
+  const x = BigInt(xStr);
+  const y = BigInt(yStr);
+
   function gcd(a, b) {
-    while (b !== 0) {
+    while (b !== 0n) {
       [a, b] = [b, a % b];
     }
     return a;
@@ -21,5 +24,5 @@ export default function handler(req, res) {
   const lcm = (x * y) / gcd(x, y);
 
   res.setHeader("Content-Type", "text/plain");
-  return res.status(200).send(String(lcm));
+  return res.status(200).send(lcm.toString());
 }
